@@ -1,11 +1,9 @@
 package com.example.tvserieapp;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 @Entity
+@Table(name = "shows")
 public class Show {
 
     @Id
@@ -59,6 +57,37 @@ public class Show {
     private String _links;
 
     private String previousepisode;
+
+    public Show(Integer id, String url, String name, String type, String language, String genres, String status, String runtime, String averageRuntime, String premiered, String ended, String officialSite, String schedule, String rating, String weight, String network, String country, String webChannel, String dvdCountry, String externals, String image, String summary, String updated, String _links, String previousepisode) {
+        this.id = id;
+        this.url = url;
+        this.name = name;
+        this.type = type;
+        this.language = language;
+        this.genres = genres;
+        this.status = status;
+        this.runtime = runtime;
+        this.averageRuntime = averageRuntime;
+        this.premiered = premiered;
+        this.ended = ended;
+        this.officialSite = officialSite;
+        this.schedule = schedule;
+        this.rating = rating;
+        this.weight = weight;
+        this.network = network;
+        this.country = country;
+        this.webChannel = webChannel;
+        this.dvdCountry = dvdCountry;
+        this.externals = externals;
+        this.image = image;
+        this.summary = summary;
+        this.updated = updated;
+        this._links = _links;
+        this.previousepisode = previousepisode;
+    }
+
+    public Show() {
+    }
 
     public Integer getId() {
         return id;
