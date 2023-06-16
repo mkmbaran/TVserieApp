@@ -1,14 +1,104 @@
 package com.example.tvserieapp;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.util.JSONPObject;
+import netscape.javascript.JSObject;
+import org.apache.tomcat.util.json.JSONParser;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.EnableMBeanExport;
+import org.springframework.data.crossstore.ChangeSetPersister;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.io.*;
+import java.net.HttpURLConnection;
+import java.net.URI;
+import java.net.URL;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import java.util.Scanner;
+
+@RestController
 @RequestMapping(path="/")
 public class ShowController {
     @Autowired
     private showRepository showRepository;
+
+    String[] shows = new String[60];
+    URL url;
+
+    /*public void lesConfigFil(){
+        File file = new File("src/main/resources/tvserier.txt");
+        try {
+            FileInputStream innSerier = new FileInputStream(file);
+            BufferedReader utSerier = new BufferedReader(new InputStreamReader(innSerier));
+            String data;
+            while ((data = utSerier.readLine()) != null){
+                shows = data.split("\\\\n"); // split each line from .txt file
+                for (String show : shows){
+                    System.out.println(show); // print each show in .txt file as test
+                }
+            }
+        }catch (IOException e) {
+            e.printStackTrace();
+        }
+    }*/
+
+    @GetMapping(path="/addShows")
+    public void lesFilOgHentFraAPI(){
+        File file = new File("src/main/resources/tvserier.txt");
+        try {
+            //lesConfigFil();
+            FileInputStream innSerier = new FileInputStream(file);
+            BufferedReader utSerier = new BufferedReader(new InputStreamReader(innSerier));
+            String data;
+            while ((data = utSerier.readLine()) != null) {
+                shows = data.split("\\\\n"); // split each line from .txt file
+                for (String show : shows) {
+                    System.out.println(show); // print each show in .txt file as test
+
+                }
+            }
+            try {
+                String str = "https://api.tvmaze.com/singlesearch/shows?q=" + shows[0];
+                url = new URL(str);
+
+                HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+                conn.setRequestMethod("GET");
+                conn.connect();
+
+                //get response code
+                int responsecode = conn.getResponseCode();
+
+                if (responsecode != 200) {
+                    throw new RuntimeException("HttpResponseCode: " + responsecode);
+                } else {
+                /*String inline = "";
+                Scanner scanner = new Scanner(url.openStream());
+
+                //write JSON data into string using a scanner
+                while (scanner.hasNext()){
+                    inline += scanner.nextLine();
+                }
+                //close scanner
+                scanner.close();
+                 */
+
+                    ObjectMapper mapper = new ObjectMapper();
+                    Show funnetShow = mapper.readValue(url, Show.class);
+                    System.out.println("Found show: " + funnetShow);
+                }
+
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+        } catch (IOException e){
+            e.printStackTrace();
+        }
+
+    }
 
     @PostMapping(path="/add")
     public @ResponseBody String addNewShow (@RequestParam String name, @RequestParam String premiered){
@@ -20,8 +110,19 @@ public class ShowController {
         return "Saved";
     }
 
-    @GetMapping(path="/all")
+    @GetMapping(path="/shows")
     public @ResponseBody Iterable<Show> getAllShows(){
         return showRepository.findAll();
+    }
+
+    /*
+    @GetMapping(path="/shows/{id}")
+    public @ResponseBody Show getShowById(@PathVariable Integer id){
+        return showRepository.findById(id);
+    }*/
+
+    @GetMapping("/greeting")
+    public String helloWorld(@RequestParam(value = "myName", defaultValue = "World") String name) {
+        return String.format("Hello %s!", name);
     }
 }

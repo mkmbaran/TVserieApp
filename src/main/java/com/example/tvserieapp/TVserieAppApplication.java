@@ -18,7 +18,7 @@ import java.util.Properties;
 public class TVserieAppApplication {
     public static void main(String[] args) {
         SpringApplication.run(TVserieAppApplication.class, args);
-
+        /*
         File file = new File("src/main/resources/tvserier.txt");
         try {
             FileInputStream innSerier = new FileInputStream(file);
@@ -32,12 +32,7 @@ public class TVserieAppApplication {
             }
         }catch (IOException e) {
             e.printStackTrace();
-        }
-    }
-
-    @GetMapping("/hello")
-    public String sayHello(@RequestParam(value = "myName", defaultValue = "World") String name) {
-        return String.format("Hello %s!", name);
+        }*/
     }
 
 }
