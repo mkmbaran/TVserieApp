@@ -1,64 +1,51 @@
 package com.example.tvserieapp;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import jakarta.persistence.*;
+import org.springframework.boot.autoconfigure.domain.EntityScan;
+
+import java.util.List;
 
 @Entity
 @Table(name = "shows")
 public class Show {
-
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     private Integer id;
-
     private String url;
-
     private String name;
-
     private String type;
-
     private String language;
-
-    private String genres;
-
+    @OneToMany
+    private List<Genre> genres;
     private String status;
-
-    private String runtime;
-
+    private Integer runtime;
     private String averageRuntime;
-
     private String premiered;
-
     private String ended;
-
     private String officialSite;
-
-    private String schedule;
-
-    private String rating;
-
-    private String weight;
-
-    private String network;
-
+    @OneToMany
+    private List<Schedule> schedules;
+    @OneToMany
+    private List<Rating> ratings;
+    private Integer weight;
+    @OneToMany
+    private List<Network> networks;
     private String country;
-
     private String webChannel;
-
     private String dvdCountry;
-
-    private String externals;
-
-    private String image;
-
+    @OneToMany
+    @JsonDeserialize(using = JsonObjectListDeserializer.class)
+    private List<External> externals;
+    @OneToMany
+    private List<Images> images;
     private String summary;
-
     private String updated;
+    @OneToMany
+    private List<Links> links;
 
-    private String _links;
-
-    private String previousepisode;
-
-    public Show(Integer id, String url, String name, String type, String language, String genres, String status, String runtime, String averageRuntime, String premiered, String ended, String officialSite, String schedule, String rating, String weight, String network, String country, String webChannel, String dvdCountry, String externals, String image, String summary, String updated, String _links, String previousepisode) {
+    public Show(Integer id, String url, String name, String type, String language, List<Genre> genres, String status, Integer runtime, String averageRuntime, String premiered, String ended, String officialSite, List<Schedule> schedules, List<Rating> ratings, Integer weight, List<Network> networks, String country, String webChannel, String dvdCountry, List<External> externals, List<Images> images, String summary, String updated, List<Links> links) {
         this.id = id;
         this.url = url;
         this.name = name;
@@ -71,22 +58,22 @@ public class Show {
         this.premiered = premiered;
         this.ended = ended;
         this.officialSite = officialSite;
-        this.schedule = schedule;
-        this.rating = rating;
+        this.schedules = schedules;
+        this.ratings = ratings;
         this.weight = weight;
-        this.network = network;
+        this.networks = networks;
         this.country = country;
         this.webChannel = webChannel;
         this.dvdCountry = dvdCountry;
         this.externals = externals;
-        this.image = image;
+        this.images = images;
         this.summary = summary;
         this.updated = updated;
-        this._links = _links;
-        this.previousepisode = previousepisode;
+        this.links = links;
     }
 
     public Show() {
+
     }
 
     public Integer getId() {
@@ -129,11 +116,11 @@ public class Show {
         this.language = language;
     }
 
-    public String getGenres() {
+    public List<Genre> getGenres() {
         return genres;
     }
 
-    public void setGenres(String genres) {
+    public void setGenres(List<Genre> genres) {
         this.genres = genres;
     }
 
@@ -145,11 +132,11 @@ public class Show {
         this.status = status;
     }
 
-    public String getRuntime() {
+    public Integer getRuntime() {
         return runtime;
     }
 
-    public void setRuntime(String runtime) {
+    public void setRuntime(Integer runtime) {
         this.runtime = runtime;
     }
 
@@ -185,36 +172,36 @@ public class Show {
         this.officialSite = officialSite;
     }
 
-    public String getSchedule() {
-        return schedule;
+    public List<Schedule> getSchedules() {
+        return schedules;
     }
 
-    public void setSchedule(String schedule) {
-        this.schedule = schedule;
+    public void setSchedules(List<Schedule> schedules) {
+        this.schedules = schedules;
     }
 
-    public String getRating() {
-        return rating;
+    public List<Rating> getRatings() {
+        return ratings;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setRatings(List<Rating> ratings) {
+        this.ratings = ratings;
     }
 
-    public String getWeight() {
+    public Integer getWeight() {
         return weight;
     }
 
-    public void setWeight(String weight) {
+    public void setWeight(Integer weight) {
         this.weight = weight;
     }
 
-    public String getNetwork() {
-        return network;
+    public List<Network> getNetworks() {
+        return networks;
     }
 
-    public void setNetwork(String network) {
-        this.network = network;
+    public void setNetworks(List<Network> networks) {
+        this.networks = networks;
     }
 
     public String getCountry() {
@@ -241,20 +228,20 @@ public class Show {
         this.dvdCountry = dvdCountry;
     }
 
-    public String getExternals() {
+    public List<External> getExternals() {
         return externals;
     }
 
-    public void setExternals(String externals) {
+    public void setExternals(List<External> externals) {
         this.externals = externals;
     }
 
-    public String getImage() {
-        return image;
+    public List<Images> getImages() {
+        return images;
     }
 
-    public void setImage(String image) {
-        this.image = image;
+    public void setImages(List<Images> images) {
+        this.images = images;
     }
 
     public String getSummary() {
@@ -273,19 +260,372 @@ public class Show {
         this.updated = updated;
     }
 
-    public String get_links() {
-        return _links;
+    public List<Links> getLinks() {
+        return links;
     }
 
-    public void set_links(String _links) {
-        this._links = _links;
+    public void setLinks(List<Links> links) {
+        this.links = links;
+    }
+}
+@Entity
+class Genre{
+    @Id
+    private String genre;
+
+    public Genre(String genre) {
+        this.genre = genre;
     }
 
-    public String getPreviousepisode() {
-        return previousepisode;
+    public Genre(){
+        super();
     }
 
-    public void setPreviousepisode(String previousepisode) {
-        this.previousepisode = previousepisode;
+
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+}
+
+@Entity
+class Schedule{
+    @Id
+    private String schedule;
+
+    @OneToMany
+    private List<Day> days;
+
+    public Schedule(String schedule, List<Day> days) {
+        this.schedule = schedule;
+        this.days = days;
+    }
+
+    public Schedule(){
+        super();
+    }
+
+    public String getSchedule() {
+        return schedule;
+    }
+
+    public void setSchedule(String schedule) {
+        this.schedule = schedule;
+    }
+
+    public List<Day> getDays() {
+        return days;
+    }
+
+    public void setDays(List<Day> days) {
+        this.days = days;
+    }
+}
+
+@Entity
+class Day{
+    @Id
+    private String dayOfTheWeek;
+
+    public Day(String dayOfTheWeek) {
+        this.dayOfTheWeek = dayOfTheWeek;
+    }
+
+    public Day(){
+        super();
+    }
+
+    public String getDayOfTheWeek() {
+        return dayOfTheWeek;
+    }
+
+    public void setDayOfTheWeek(String dayOfTheWeek) {
+        this.dayOfTheWeek = dayOfTheWeek;
+    }
+}
+
+@Entity
+class Rating{
+    @Id
+    private String rating;
+    private Double score;
+
+    public Rating(String rating, Double score) {
+        this.rating = rating;
+        this.score = score;
+    }
+
+    public Rating(){
+        super();
+    }
+
+    public String getRating() {
+        return rating;
+    }
+
+    public void setRating(String rating) {
+        this.rating = rating;
+    }
+
+    public Double getScore() {
+        return score;
+    }
+
+    public void setScore(Double score) {
+        this.score = score;
+    }
+}
+
+@Entity
+class Network{
+    @Id
+    private Integer networkId;
+    private String networkName;
+    @OneToMany
+    private List<Country> countries;
+
+    public Network(Integer networkId, String networkName, List<Country> countries) {
+        this.networkId = networkId;
+        this.networkName = networkName;
+        this.countries = countries;
+    }
+
+    public Network(){
+        super();
+    }
+
+    public Integer getNetworkId() {
+        return networkId;
+    }
+
+    public void setNetworkId(Integer networkId) {
+        this.networkId = networkId;
+    }
+
+    public String getNetworkName() {
+        return networkName;
+    }
+
+    public void setNetworkName(String networkName) {
+        this.networkName = networkName;
+    }
+
+    public List<Country> getCountries() {
+        return countries;
+    }
+
+    public void setCountries(List<Country> countries) {
+        this.countries = countries;
+    }
+}
+
+@Entity
+class Country{
+    @Id
+    private String countryName;
+    private String countryCode;
+    private String countryTimezone;
+
+    public Country(String countryName, String countryCode, String countryTimezone) {
+        this.countryName = countryName;
+        this.countryCode = countryCode;
+        this.countryTimezone = countryTimezone;
+    }
+
+    public Country(){
+        super();
+    }
+
+    public String getCountryName() {
+        return countryName;
+    }
+
+    public void setCountryName(String countryName) {
+        this.countryName = countryName;
+    }
+
+    public String getCountryCode() {
+        return countryCode;
+    }
+
+    public void setCountryCode(String countryCode) {
+        this.countryCode = countryCode;
+    }
+
+    public String getCountryTimezone() {
+        return countryTimezone;
+    }
+
+    public void setCountryTimezone(String countryTimezone) {
+        this.countryTimezone = countryTimezone;
+    }
+}
+
+@Entity
+class External{
+    @Id
+    @JsonProperty("tvrage")
+    private Integer tvrage;
+    @JsonProperty("thetvdb")
+    private Integer thetvdb;
+    @JsonProperty("imdb")
+    private String imdb;
+
+    public External(Integer tvrage, Integer thetvdb, String imdb) {
+        this.tvrage = tvrage;
+        this.thetvdb = thetvdb;
+        this.imdb = imdb;
+    }
+
+    public External(){
+        super();
+    }
+
+    public Integer getTvrage() {
+        return tvrage;
+    }
+
+    public void setTvrage(Integer tvrage) {
+        this.tvrage = tvrage;
+    }
+
+    public Integer getThetvdb() {
+        return thetvdb;
+    }
+
+    public void setThetvdb(Integer thetvdb) {
+        this.thetvdb = thetvdb;
+    }
+
+    public String getImdb() {
+        return imdb;
+    }
+
+    public void setImdb(String imdb) {
+        this.imdb = imdb;
+    }
+}
+
+@Entity
+class Images{
+    @Id
+    private String imageMedium;
+    private String imageOriginal;
+
+    public Images(String imageMedium, String imageOriginal) {
+        this.imageMedium = imageMedium;
+        this.imageOriginal = imageOriginal;
+    }
+
+    public Images(){
+        super();
+    }
+
+    public String getImageMedium() {
+        return imageMedium;
+    }
+
+    public void setImageMedium(String imageMedium) {
+        this.imageMedium = imageMedium;
+    }
+
+    public String getImageOriginal() {
+        return imageOriginal;
+    }
+
+    public void setImageOriginal(String imageOriginal) {
+        this.imageOriginal = imageOriginal;
+    }
+}
+
+@Entity
+class Links{
+    @Id
+    private Integer LinkId;
+    @OneToMany
+    private List<LinkSelf> linkSelves;
+
+    @OneToMany
+    private List<LinkPrevEpisode> linkPrevEpisodes;
+
+    public Links(Integer linkId, List<LinkSelf> linkSelves, List<LinkPrevEpisode> linkPrevEpisodes) {
+        LinkId = linkId;
+        this.linkSelves = linkSelves;
+        this.linkPrevEpisodes = linkPrevEpisodes;
+    }
+
+    public Links(){
+        super();
+    }
+
+    public Integer getLinkId() {
+        return LinkId;
+    }
+
+    public void setLinkId(Integer linkId) {
+        LinkId = linkId;
+    }
+
+    public List<LinkSelf> getLinkSelves() {
+        return linkSelves;
+    }
+
+    public void setLinkSelves(List<LinkSelf> linkSelves) {
+        this.linkSelves = linkSelves;
+    }
+
+    public List<LinkPrevEpisode> getLinkPrevEpisodes() {
+        return linkPrevEpisodes;
+    }
+
+    public void setLinkPrevEpisodes(List<LinkPrevEpisode> linkPrevEpisodes) {
+        this.linkPrevEpisodes = linkPrevEpisodes;
+    }
+}
+
+@Entity
+class LinkSelf{
+    @Id
+    private String selfRef;
+
+    public LinkSelf(String selfRef) {
+        this.selfRef = selfRef;
+    }
+
+    public LinkSelf() {
+        super();
+    }
+
+    public String getSelfRef() {
+        return selfRef;
+    }
+
+    public void setSelfRef(String selfRef) {
+        this.selfRef = selfRef;
+    }
+}
+
+@Entity
+class LinkPrevEpisode{
+    @Id
+    private String prevRef;
+
+    public LinkPrevEpisode(String prevRef) {
+        this.prevRef = prevRef;
+    }
+
+    public LinkPrevEpisode() {
+        super();
+    }
+
+    public String getPrevRef() {
+        return prevRef;
+    }
+
+    public void setPrevRef(String prevRef) {
+        this.prevRef = prevRef;
     }
 }

@@ -1,5 +1,7 @@
 package com.example.tvserieapp;
 
+import com.fasterxml.jackson.core.io.JsonEOFException;
+import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.util.JSONPObject;
 import netscape.javascript.JSObject;
@@ -74,20 +76,18 @@ public class ShowController {
                 if (responsecode != 200) {
                     throw new RuntimeException("HttpResponseCode: " + responsecode);
                 } else {
-                /*String inline = "";
-                Scanner scanner = new Scanner(url.openStream());
 
-                //write JSON data into string using a scanner
-                while (scanner.hasNext()){
-                    inline += scanner.nextLine();
-                }
-                //close scanner
-                scanner.close();
-                 */
+                    ObjectMapper mapper = new ObjectMapper()
+                            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                            .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
+                            .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+                    try {
+                        Show funnetShow = mapper.readValue(url, Show.class);
+                        System.out.println("Found show: " + funnetShow);
+                    }catch (IOException e){
+                        e.printStackTrace();
+                    }
 
-                    ObjectMapper mapper = new ObjectMapper();
-                    Show funnetShow = mapper.readValue(url, Show.class);
-                    System.out.println("Found show: " + funnetShow);
                 }
 
             } catch (IOException e) {
