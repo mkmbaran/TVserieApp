@@ -1,5 +1,6 @@
 package com.example.tvserieapp;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.io.JsonEOFException;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -81,9 +82,12 @@ public class ShowController {
                             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                             .configure(DeserializationFeature.ACCEPT_EMPTY_STRING_AS_NULL_OBJECT, true)
                             .configure(DeserializationFeature.ACCEPT_EMPTY_ARRAY_AS_NULL_OBJECT, true);
+                    mapper.enable(DeserializationFeature.ACCEPT_SINGLE_VALUE_AS_ARRAY);
+                    mapper.setSerializationInclusion(JsonInclude.Include.USE_DEFAULTS);
                     try {
                         Show funnetShow = mapper.readValue(url, Show.class);
-                        System.out.println("Found show: " + funnetShow);
+                        System.out.println("Found show: " + funnetShow.getName() + " from: " + funnetShow.getOfficialSite());
+                        showRepository.save(funnetShow);
                     }catch (IOException e){
                         e.printStackTrace();
                     }

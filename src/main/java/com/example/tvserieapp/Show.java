@@ -2,9 +2,11 @@ package com.example.tvserieapp;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import jakarta.persistence.*;
 import org.springframework.boot.autoconfigure.domain.EntityScan;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Entity
@@ -17,8 +19,14 @@ public class Show {
     private String name;
     private String type;
     private String language;
-    @OneToMany
-    private List<Genre> genres;
+    /*
+    @OneToMany(cascade = {CascadeType.ALL})
+    private List<Genres> genresList;
+     */
+
+    @ElementCollection
+    private List<String> genres;
+
     private String status;
     private Integer runtime;
     private String averageRuntime;
@@ -35,17 +43,17 @@ public class Show {
     private String country;
     private String webChannel;
     private String dvdCountry;
-    @OneToMany
-    @JsonDeserialize(using = JsonObjectListDeserializer.class)
-    private List<External> externals;
+    @OneToOne(cascade = {CascadeType.ALL})
+    private Externals externalsList;
     @OneToMany
     private List<Images> images;
+    @Column(length = 1000)
     private String summary;
     private String updated;
     @OneToMany
     private List<Links> links;
 
-    public Show(Integer id, String url, String name, String type, String language, List<Genre> genres, String status, Integer runtime, String averageRuntime, String premiered, String ended, String officialSite, List<Schedule> schedules, List<Rating> ratings, Integer weight, List<Network> networks, String country, String webChannel, String dvdCountry, List<External> externals, List<Images> images, String summary, String updated, List<Links> links) {
+    public Show(Integer id, String url, String name, String type, String language, List<String> genres, String status, Integer runtime, String averageRuntime, String premiered, String ended, String officialSite, List<Schedule> schedules, List<Rating> ratings, Integer weight, List<Network> networks, String country, String webChannel, String dvdCountry, Externals externalsList, List<Images> images, String summary, String updated, List<Links> links) {
         this.id = id;
         this.url = url;
         this.name = name;
@@ -65,7 +73,7 @@ public class Show {
         this.country = country;
         this.webChannel = webChannel;
         this.dvdCountry = dvdCountry;
-        this.externals = externals;
+        this.externalsList = externalsList;
         this.images = images;
         this.summary = summary;
         this.updated = updated;
@@ -115,12 +123,20 @@ public class Show {
     public void setLanguage(String language) {
         this.language = language;
     }
+/*
+    public List<Genres> getGenres() {
+        return genresList;
+    }
 
-    public List<Genre> getGenres() {
+    public void setGenres(List<Genres> genresList) {
+        this.genresList = genresList;
+    }*/
+
+    public List<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<Genre> genres) {
+    public void setGenres(List<String> genres) {
         this.genres = genres;
     }
 
@@ -228,12 +244,13 @@ public class Show {
         this.dvdCountry = dvdCountry;
     }
 
-    public List<External> getExternals() {
-        return externals;
+    public Externals getExternals() {
+        return externalsList;
     }
 
-    public void setExternals(List<External> externals) {
-        this.externals = externals;
+    @JsonProperty("externals")
+    public void setExternals(Externals externalsList) {
+        this.externalsList = externalsList;
     }
 
     public List<Images> getImages() {
@@ -268,39 +285,39 @@ public class Show {
         this.links = links;
     }
 }
+/*
 @Entity
-class Genre{
+class Genres{
     @Id
-    private String genre;
+    private String genres = "defaultGenre";
 
-    public Genre(String genre) {
-        this.genre = genre;
+    public Genres(String genres) {
+        this.genres = genres;
     }
 
-    public Genre(){
+    public Genres(){
         super();
     }
 
-
-    public String getGenre() {
-        return genre;
+    public String getGenres() {
+        return genres;
     }
 
-    public void setGenre(String genre) {
-        this.genre = genre;
+    public void setGenres(String genres) {
+        this.genres = genres;
     }
-}
+}*/
 
 @Entity
 class Schedule{
     @Id
-    private String schedule;
+    private String timeSchedule;
 
     @OneToMany
     private List<Day> days;
 
-    public Schedule(String schedule, List<Day> days) {
-        this.schedule = schedule;
+    public Schedule(String timeSchedule, List<Day> days) {
+        this.timeSchedule = timeSchedule;
         this.days = days;
     }
 
@@ -308,12 +325,12 @@ class Schedule{
         super();
     }
 
-    public String getSchedule() {
-        return schedule;
+    public String getTimeSchedule() {
+        return timeSchedule;
     }
 
-    public void setSchedule(String schedule) {
-        this.schedule = schedule;
+    public void setTimeSchedule(String timeSchedule) {
+        this.timeSchedule = timeSchedule;
     }
 
     public List<Day> getDays() {
@@ -465,8 +482,10 @@ class Country{
 }
 
 @Entity
-class External{
+class Externals{
     @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private Integer extId;
     @JsonProperty("tvrage")
     private Integer tvrage;
     @JsonProperty("thetvdb")
@@ -474,15 +493,20 @@ class External{
     @JsonProperty("imdb")
     private String imdb;
 
-    public External(Integer tvrage, Integer thetvdb, String imdb) {
+    public Externals(Integer extId, Integer tvrage, Integer thetvdb, String imdb) {
+        this.extId = extId;
         this.tvrage = tvrage;
         this.thetvdb = thetvdb;
         this.imdb = imdb;
     }
 
-    public External(){
+    public Externals(){
         super();
     }
+
+    public Integer getExtId(){return extId;};
+
+    public void setExtId(Integer extId){this.extId = extId;};
 
     public Integer getTvrage() {
         return tvrage;
