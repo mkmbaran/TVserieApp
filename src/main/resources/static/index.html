@@ -5,7 +5,18 @@
     <title>TV show application</title>
 </head>
 <body>
-    <h2><a href="/greeting"></a></h2>
-    <p>If you are seeing this, it means the application is running :)</p>
+    <h1>TV-show reading and retrieving application</h1>
+    <p>If you are seeing this page, it means the application is running</p>
+    <p>This simple application will read src/main/resources/tvserier.txt one line at a time, query tvmaze.com/api for more information about each show, and save it to a local MySQL database </p>
+    <p>To begin, press the button below.</p>
+    <button onclick="location.href = '/addShows'">
+        Read file and add shows
+    </button>
+    <script></script>
+    <p>Once clicked, the application will read the tvserier.txt file, query tvmaze.com/api, and save them to a local MySQL database </p>
+    <h2>This might take a while</h2>
+    <p>Please keep an eye on the Java console for progress.</p>
+    <h2>PSA</h2>
+    <p>I only had enough time to make the application save the data to MySQL tables, no report.txt gets printed. Please connect to MySQL to see data :) </p>
 </body>
 </html>

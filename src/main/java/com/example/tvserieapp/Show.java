@@ -1,59 +1,76 @@
 package com.example.tvserieapp;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
-import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
-import jakarta.persistence.*;
-import org.springframework.boot.autoconfigure.domain.EntityScan;
 
-import java.util.ArrayList;
-import java.util.List;
+import jakarta.persistence.*;
+
+import java.io.Serializable;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
-@Table(name = "shows")
-public class Show {
+@Table(name = "Shows")
+public class Show implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
     private Integer id;
+    @Column(name = "url")
     private String url;
+    @Column(name = "name")
     private String name;
+    @Column(name = "type")
     private String type;
+    @Column(name = "language")
     private String language;
-    /*
-    @OneToMany(cascade = {CascadeType.ALL})
-    private List<Genres> genresList;
-     */
 
+    @Column(name = "genres")
     @ElementCollection
-    private List<String> genres;
-
+    private Set<String> genres = new HashSet<>();
+    @Column(name = "status")
     private String status;
+    @Column(name = "runtime")
     private Integer runtime;
-    private String averageRuntime;
+    @Column(name = "averageRuntime")
+    private Integer averageRuntime;
+    @Column(name = "premiered")
     private String premiered;
+    @Column(name = "ended")
     private String ended;
+    @Column(name = "officialSite")
     private String officialSite;
-    @OneToMany
-    private List<Schedule> schedules;
-    @OneToMany
-    private List<Rating> ratings;
-    private Integer weight;
-    @OneToMany
-    private List<Network> networks;
-    private String country;
-    private String webChannel;
-    private String dvdCountry;
-    @OneToOne(cascade = {CascadeType.ALL})
-    private Externals externalsList;
-    @OneToMany
-    private List<Images> images;
-    @Column(length = 1000)
-    private String summary;
-    private String updated;
-    @OneToMany
-    private List<Links> links;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "schedule_id",referencedColumnName = "id")
+    private Schedule schedule;
 
-    public Show(Integer id, String url, String name, String type, String language, List<String> genres, String status, Integer runtime, String averageRuntime, String premiered, String ended, String officialSite, List<Schedule> schedules, List<Rating> ratings, Integer weight, List<Network> networks, String country, String webChannel, String dvdCountry, Externals externalsList, List<Images> images, String summary, String updated, List<Links> links) {
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "rating_id",referencedColumnName = "id")
+    private Rating rating;
+    @Column(name = "weight")
+    private Integer weight;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "network_networkId",referencedColumnName = "networkId")
+    private Network network;
+    @OneToOne
+    @JoinColumn(name = "webchannel_id",referencedColumnName = "id")
+    private Webchannel webchannel;
+    @Column(name = "dvdCountry")
+    private String dvdCountry;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "id",referencedColumnName = "id")
+    private Externals externals;
+
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "image_id",referencedColumnName = "id")
+    private Image image;
+    @Column(name = "summary", length = 2000)
+    private String summary;
+    @Column(name = "updated")
+    private Integer updated;
+    @OneToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "links_id",referencedColumnName = "id")
+    private Links _links;
+
+    public Show(Integer id, String url, String name, String type, String language, Set<String> genres, String status, Integer runtime, Integer averageRuntime, String premiered, String ended, String officialSite, Schedule schedule, Rating rating, Integer weight, Network network, Webchannel webchannel, String dvdCountry, Externals externals, Image image, String summary, Integer updated, Links _links) {
         this.id = id;
         this.url = url;
         this.name = name;
@@ -66,22 +83,20 @@ public class Show {
         this.premiered = premiered;
         this.ended = ended;
         this.officialSite = officialSite;
-        this.schedules = schedules;
-        this.ratings = ratings;
+        this.schedule = schedule;
+        this.rating = rating;
         this.weight = weight;
-        this.networks = networks;
-        this.country = country;
-        this.webChannel = webChannel;
+        this.network = network;
+        this.webchannel = webchannel;
         this.dvdCountry = dvdCountry;
-        this.externalsList = externalsList;
-        this.images = images;
+        this.externals = externals;
+        this.image = image;
         this.summary = summary;
         this.updated = updated;
-        this.links = links;
+        this._links = _links;
     }
 
     public Show() {
-
     }
 
     public Integer getId() {
@@ -123,20 +138,12 @@ public class Show {
     public void setLanguage(String language) {
         this.language = language;
     }
-/*
-    public List<Genres> getGenres() {
-        return genresList;
-    }
 
-    public void setGenres(List<Genres> genresList) {
-        this.genresList = genresList;
-    }*/
-
-    public List<String> getGenres() {
+    public Set<String> getGenres() {
         return genres;
     }
 
-    public void setGenres(List<String> genres) {
+    public void setGenres(Set<String> genres) {
         this.genres = genres;
     }
 
@@ -156,11 +163,11 @@ public class Show {
         this.runtime = runtime;
     }
 
-    public String getAverageRuntime() {
+    public Integer getAverageRuntime() {
         return averageRuntime;
     }
 
-    public void setAverageRuntime(String averageRuntime) {
+    public void setAverageRuntime(Integer averageRuntime) {
         this.averageRuntime = averageRuntime;
     }
 
@@ -188,20 +195,20 @@ public class Show {
         this.officialSite = officialSite;
     }
 
-    public List<Schedule> getSchedules() {
-        return schedules;
+    public Schedule getSchedule() {
+        return schedule;
     }
 
-    public void setSchedules(List<Schedule> schedules) {
-        this.schedules = schedules;
+    public void setSchedule(Schedule schedule) {
+        this.schedule = schedule;
     }
 
-    public List<Rating> getRatings() {
-        return ratings;
+    public Rating getRating() {
+        return rating;
     }
 
-    public void setRatings(List<Rating> ratings) {
-        this.ratings = ratings;
+    public void setRating(Rating rating) {
+        this.rating = rating;
     }
 
     public Integer getWeight() {
@@ -212,28 +219,20 @@ public class Show {
         this.weight = weight;
     }
 
-    public List<Network> getNetworks() {
-        return networks;
+    public Network getNetwork() {
+        return network;
     }
 
-    public void setNetworks(List<Network> networks) {
-        this.networks = networks;
+    public void setNetwork(Network network) {
+        this.network = network;
     }
 
-    public String getCountry() {
-        return country;
+    public Webchannel getWebchannel() {
+        return webchannel;
     }
 
-    public void setCountry(String country) {
-        this.country = country;
-    }
-
-    public String getWebChannel() {
-        return webChannel;
-    }
-
-    public void setWebChannel(String webChannel) {
-        this.webChannel = webChannel;
+    public void setWebchannel(Webchannel webchannel) {
+        this.webchannel = webchannel;
     }
 
     public String getDvdCountry() {
@@ -245,20 +244,19 @@ public class Show {
     }
 
     public Externals getExternals() {
-        return externalsList;
+        return externals;
     }
 
-    @JsonProperty("externals")
-    public void setExternals(Externals externalsList) {
-        this.externalsList = externalsList;
+    public void setExternals(Externals externals) {
+        this.externals = externals;
     }
 
-    public List<Images> getImages() {
-        return images;
+    public Image getImage() {
+        return image;
     }
 
-    public void setImages(List<Images> images) {
-        this.images = images;
+    public void setImage(Image image) {
+        this.image = image;
     }
 
     public String getSummary() {
@@ -269,55 +267,42 @@ public class Show {
         this.summary = summary;
     }
 
-    public String getUpdated() {
+    public Integer getUpdated() {
         return updated;
     }
 
-    public void setUpdated(String updated) {
+    public void setUpdated(Integer updated) {
         this.updated = updated;
     }
 
-    public List<Links> getLinks() {
-        return links;
+    public Links get_links() {
+        return _links;
     }
 
-    public void setLinks(List<Links> links) {
-        this.links = links;
+    public void set_links(Links _links) {
+        this._links = _links;
     }
 }
-/*
-@Entity
-class Genres{
-    @Id
-    private String genres = "defaultGenre";
-
-    public Genres(String genres) {
-        this.genres = genres;
-    }
-
-    public Genres(){
-        super();
-    }
-
-    public String getGenres() {
-        return genres;
-    }
-
-    public void setGenres(String genres) {
-        this.genres = genres;
-    }
-}*/
 
 @Entity
 class Schedule{
     @Id
-    private String timeSchedule;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
 
-    @OneToMany
-    private List<Day> days;
+    @Column(name = "time")
+    private String time;
+    @Column(name = "days")
+    @ElementCollection
+    private Set<String> days = new HashSet<>();
 
-    public Schedule(String timeSchedule, List<Day> days) {
-        this.timeSchedule = timeSchedule;
+    @OneToOne(mappedBy = "schedule")
+    private Show show;
+
+    public Schedule(int id, String time, Set<String> days) {
+        this.id = id;
+        this.time = time;
         this.days = days;
     }
 
@@ -325,159 +310,317 @@ class Schedule{
         super();
     }
 
-    public String getTimeSchedule() {
-        return timeSchedule;
+    public int getId() {
+        return id;
     }
 
-    public void setTimeSchedule(String timeSchedule) {
-        this.timeSchedule = timeSchedule;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public List<Day> getDays() {
+    public String getTime() {
+        return time;
+    }
+
+    public void setTime(String time) {
+        this.time = time;
+    }
+
+    public Set<String> getDays() {
         return days;
     }
 
-    public void setDays(List<Day> days) {
+    public void setDays(Set<String> days) {
         this.days = days;
-    }
-}
-
-@Entity
-class Day{
-    @Id
-    private String dayOfTheWeek;
-
-    public Day(String dayOfTheWeek) {
-        this.dayOfTheWeek = dayOfTheWeek;
-    }
-
-    public Day(){
-        super();
-    }
-
-    public String getDayOfTheWeek() {
-        return dayOfTheWeek;
-    }
-
-    public void setDayOfTheWeek(String dayOfTheWeek) {
-        this.dayOfTheWeek = dayOfTheWeek;
     }
 }
 
 @Entity
 class Rating{
     @Id
-    private String rating;
-    private Double score;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "average")
+    private Double average;
 
-    public Rating(String rating, Double score) {
-        this.rating = rating;
-        this.score = score;
+    @OneToOne(mappedBy = "rating")
+    private Show show;
+
+    public Rating(int id, Double average) {
+        this.id = id;
+        this.average = average;
     }
 
     public Rating(){
         super();
     }
 
-    public String getRating() {
-        return rating;
+    public int getId() {
+        return id;
     }
 
-    public void setRating(String rating) {
-        this.rating = rating;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public Double getScore() {
-        return score;
+    public Double getAverage() {
+        return average;
     }
 
-    public void setScore(Double score) {
-        this.score = score;
+    public void setAverage(Double average) {
+        this.average = average;
     }
 }
 
 @Entity
 class Network{
     @Id
-    private Integer networkId;
-    private String networkName;
-    @OneToMany
-    private List<Country> countries;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int networkId;
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "name")
+    private String name;
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    @OneToOne(cascade = CascadeType.ALL)
+    private NetworkCountry country;
+    @Column(name = "officialName")
+    private String officialSite;
 
-    public Network(Integer networkId, String networkName, List<Country> countries) {
+    @OneToOne(mappedBy = "network")
+    private Show show;
+
+    public Network(int networkId, Integer id, String name, NetworkCountry country, String officialSite) {
         this.networkId = networkId;
-        this.networkName = networkName;
-        this.countries = countries;
+        this.id = id;
+        this.name = name;
+        this.country = country;
+        this.officialSite = officialSite;
     }
 
     public Network(){
         super();
     }
 
-    public Integer getNetworkId() {
+    public int getNetworkId() {
         return networkId;
     }
 
-    public void setNetworkId(Integer networkId) {
+    public void setNetworkId(int networkId) {
         this.networkId = networkId;
     }
 
-    public String getNetworkName() {
-        return networkName;
+    public Integer getId() {
+        return id;
     }
 
-    public void setNetworkName(String networkName) {
-        this.networkName = networkName;
+    public void setId(Integer id) {
+        this.id = id;
     }
 
-    public List<Country> getCountries() {
-        return countries;
+    public String getName() {
+        return name;
     }
 
-    public void setCountries(List<Country> countries) {
-        this.countries = countries;
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public NetworkCountry getCountry() {
+        return country;
+    }
+
+    public void setCountry(NetworkCountry country) {
+        this.country = country;
+    }
+
+    public String getOfficialSite() {
+        return officialSite;
+    }
+
+    public void setOfficialSite(String officialSite) {
+        this.officialSite = officialSite;
     }
 }
 
 @Entity
-class Country{
+class NetworkCountry{
     @Id
-    private String countryName;
-    private String countryCode;
-    private String countryTimezone;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "code")
+    private String code;
+    @Column(name = "timezone")
+    private String timezone;
 
-    public Country(String countryName, String countryCode, String countryTimezone) {
-        this.countryName = countryName;
-        this.countryCode = countryCode;
-        this.countryTimezone = countryTimezone;
+    @OneToOne(mappedBy = "country")
+    private Network network;
+
+    public NetworkCountry(int id, String name, String code, String timezone) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.timezone = timezone;
     }
 
-    public Country(){
+    public NetworkCountry(){
         super();
     }
 
-    public String getCountryName() {
-        return countryName;
+    public int getId() {
+        return id;
     }
 
-    public void setCountryName(String countryName) {
-        this.countryName = countryName;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getCountryCode() {
-        return countryCode;
+    public String getName() {
+        return name;
     }
 
-    public void setCountryCode(String countryCode) {
-        this.countryCode = countryCode;
+    public void setName(String name) {
+        this.name = name;
     }
 
-    public String getCountryTimezone() {
-        return countryTimezone;
+    public String getCode() {
+        return code;
     }
 
-    public void setCountryTimezone(String countryTimezone) {
-        this.countryTimezone = countryTimezone;
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+}
+
+@Entity
+class WebchannelCountry{
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "name")
+    private String name;
+    @Column(name = "code")
+    private String code;
+    @Column(name = "timezone")
+    private String timezone;
+
+    @OneToOne(mappedBy = "country")
+    private Webchannel webchannel;
+
+    public WebchannelCountry(int id, String name, String code, String timezone) {
+        this.id = id;
+        this.name = name;
+        this.code = code;
+        this.timezone = timezone;
+    }
+
+    public WebchannelCountry(){
+        super();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
+    }
+
+    public String getTimezone() {
+        return timezone;
+    }
+
+    public void setTimezone(String timezone) {
+        this.timezone = timezone;
+    }
+}
+
+@Entity
+class Webchannel{
+    @Id
+    @Column(name = "id")
+    private Integer id;
+    @Column(name = "name")
+    private String name;
+    @JoinColumn(name = "country_id", referencedColumnName = "id")
+    @OneToOne
+    private WebchannelCountry country;
+    @Column(name = "officialSite")
+    private String officialSite;
+
+    @OneToOne(mappedBy = "webchannel")
+    private Show show;
+
+    public Webchannel(Integer id, String name, WebchannelCountry country, String officialSite) {
+        this.id = id;
+        this.name = name;
+        this.country = country;
+        this.officialSite = officialSite;
+    }
+
+    public Webchannel(){
+        super();
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public WebchannelCountry getCountry() {
+        return country;
+    }
+
+    public void setCountry(WebchannelCountry country) {
+        this.country = country;
+    }
+
+    public String getOfficialSite() {
+        return officialSite;
+    }
+
+    public void setOfficialSite(String officialSite) {
+        this.officialSite = officialSite;
     }
 }
 
@@ -485,16 +628,21 @@ class Country{
 class Externals{
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer extId;
-    @JsonProperty("tvrage")
+    @Column(name = "id")
+    private int id;
+
+    @Column(name = "tvrage")
     private Integer tvrage;
-    @JsonProperty("thetvdb")
+    @Column(name = "thetvdb")
     private Integer thetvdb;
-    @JsonProperty("imdb")
+    @Column(name = "imdb")
     private String imdb;
 
-    public Externals(Integer extId, Integer tvrage, Integer thetvdb, String imdb) {
-        this.extId = extId;
+    @OneToOne(mappedBy = "externals")
+    private Show show;
+
+    public Externals(int id, Integer tvrage, Integer thetvdb, String imdb) {
+        this.id = id;
         this.tvrage = tvrage;
         this.thetvdb = thetvdb;
         this.imdb = imdb;
@@ -504,9 +652,13 @@ class Externals{
         super();
     }
 
-    public Integer getExtId(){return extId;};
+    public int getId() {
+        return id;
+    }
 
-    public void setExtId(Integer extId){this.extId = extId;};
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public Integer getTvrage() {
         return tvrage;
@@ -534,122 +686,185 @@ class Externals{
 }
 
 @Entity
-class Images{
+class Image{
     @Id
-    private String imageMedium;
-    private String imageOriginal;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "medium")
+    private String medium;
+    @Column(name = "original")
+    private String original;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy = "image")
+    private Show show;
 
-    public Images(String imageMedium, String imageOriginal) {
-        this.imageMedium = imageMedium;
-        this.imageOriginal = imageOriginal;
+    public Image(int id, String medium, String original, Show show) {
+        this.id = id;
+        this.medium = medium;
+        this.original = original;
+        this.show = show;
     }
 
-    public Images(){
+    public Image(){
         super();
     }
 
-    public String getImageMedium() {
-        return imageMedium;
+    public int getId() {
+        return id;
     }
 
-    public void setImageMedium(String imageMedium) {
-        this.imageMedium = imageMedium;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public String getImageOriginal() {
-        return imageOriginal;
+    public String getMedium() {
+        return medium;
     }
 
-    public void setImageOriginal(String imageOriginal) {
-        this.imageOriginal = imageOriginal;
+    public void setMedium(String medium) {
+        this.medium = medium;
+    }
+
+    public String getOriginal() {
+        return original;
+    }
+
+    public void setOriginal(String original) {
+        this.original = original;
+    }
+
+    public Show getShow() {
+        return show;
+    }
+
+    public void setShow(Show show) {
+        this.show = show;
     }
 }
 
 @Entity
+@Table(name="Links")
 class Links{
     @Id
-    private Integer LinkId;
-    @OneToMany
-    private List<LinkSelf> linkSelves;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private int id;
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "self_id", referencedColumnName = "id")
+    private Self self;
 
-    @OneToMany
-    private List<LinkPrevEpisode> linkPrevEpisodes;
+    @OneToOne(cascade=CascadeType.ALL, fetch = FetchType.LAZY)
+    @JoinColumn(name = "previousepisode_id", referencedColumnName = "id")
+    private Previousepisode previousepisode;
 
-    public Links(Integer linkId, List<LinkSelf> linkSelves, List<LinkPrevEpisode> linkPrevEpisodes) {
-        LinkId = linkId;
-        this.linkSelves = linkSelves;
-        this.linkPrevEpisodes = linkPrevEpisodes;
+    @OneToOne(mappedBy = "_links")
+    private Show show;
+
+    public Links(int id, Self self, Previousepisode previousepisode) {
+        this.id = id;
+        this.self = self;
+        this.previousepisode = previousepisode;
     }
 
     public Links(){
         super();
     }
 
-    public Integer getLinkId() {
-        return LinkId;
+    public int getId() {
+        return id;
     }
 
-    public void setLinkId(Integer linkId) {
-        LinkId = linkId;
+    public void setId(int id) {
+        this.id = id;
     }
 
-    public List<LinkSelf> getLinkSelves() {
-        return linkSelves;
+    public Self getSelf() {
+        return self;
     }
 
-    public void setLinkSelves(List<LinkSelf> linkSelves) {
-        this.linkSelves = linkSelves;
+    public void setSelf(Self self) {
+        this.self = self;
     }
 
-    public List<LinkPrevEpisode> getLinkPrevEpisodes() {
-        return linkPrevEpisodes;
+    public Previousepisode getPreviousepisode() {
+        return previousepisode;
     }
 
-    public void setLinkPrevEpisodes(List<LinkPrevEpisode> linkPrevEpisodes) {
-        this.linkPrevEpisodes = linkPrevEpisodes;
-    }
-}
-
-@Entity
-class LinkSelf{
-    @Id
-    private String selfRef;
-
-    public LinkSelf(String selfRef) {
-        this.selfRef = selfRef;
-    }
-
-    public LinkSelf() {
-        super();
-    }
-
-    public String getSelfRef() {
-        return selfRef;
-    }
-
-    public void setSelfRef(String selfRef) {
-        this.selfRef = selfRef;
+    public void setPreviousepisode(Previousepisode previousepisode) {
+        this.previousepisode = previousepisode;
     }
 }
 
 @Entity
-class LinkPrevEpisode{
+class Self{
     @Id
-    private String prevRef;
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "href")
+    private String href;
 
-    public LinkPrevEpisode(String prevRef) {
-        this.prevRef = prevRef;
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="self")
+    private Links links;
+
+    public Self(int id ,String href) {
+        this.id = id;
+        this.href = href;
     }
 
-    public LinkPrevEpisode() {
+    public Self() {
         super();
     }
 
-    public String getPrevRef() {
-        return prevRef;
+    public int getId() {
+        return id;
     }
 
-    public void setPrevRef(String prevRef) {
-        this.prevRef = prevRef;
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
+    }
+}
+
+@Entity
+class Previousepisode{
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id")
+    private int id;
+    @Column(name = "href")
+    private String href;
+
+    @OneToOne(fetch = FetchType.LAZY, mappedBy="previousepisode")
+    private Links links;
+
+    public Previousepisode(int id, String href) {
+        this.href = href;
+    }
+
+    public Previousepisode() {
+        super();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public String getHref() {
+        return href;
+    }
+
+    public void setHref(String href) {
+        this.href = href;
     }
 }
